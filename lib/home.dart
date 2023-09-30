@@ -11,14 +11,31 @@ class Home extends StatefulWidget {
 
 class _HomeState extends State<Home> {
   List<dynamic> categories = [];
-  bool isLoading = true;
+  bool showBtn = false;
 
-  List defaultCategories = ['values', 'movies', 'music', 'sports'];
+  ScrollController scrollController = ScrollController();
 
   @override
   void initState() {
-    super.initState();
     fetchCategories();
+    scrollController.addListener(() {
+      //scroll listener
+      double showoffset =
+          10.0; //Back to top botton will show on scroll offset 10.0
+
+      if (scrollController.offset > showoffset) {
+        showBtn = true;
+        setState(() {
+          //update state
+        });
+      } else {
+        showBtn = false;
+        setState(() {
+          //update state
+        });
+      }
+    });
+    super.initState();
   }
 
   Future<void> fetchCategories() async {
@@ -26,16 +43,16 @@ class _HomeState extends State<Home> {
         await http.get(Uri.parse('https://the-trivia-api.com/v2/tags'));
 
     if (response.statusCode == 200) {
+      final List newCategories = json.decode(response.body);
       // Successful response, parse and handle the data here
       setState(() {
-        categories = json.decode(response.body);
-        isLoading = false;
+        categories = newCategories.map<String>((category) {
+          final categoryName = category;
+          return "$categoryName";
+        }).toList();
       });
     } else {
-      // Handle errors, such as network issues or server errors
-      setState(() {
-        isLoading = false;
-      });
+      print(response);
     }
   }
 
@@ -46,6 +63,18 @@ class _HomeState extends State<Home> {
     return Scaffold(
       resizeToAvoidBottomInset: false,
       extendBodyBehindAppBar: true,
+      floatingActionButton: FloatingActionButton.small(
+        onPressed: () {
+          scrollController.animateTo(
+              //go to top of scroll
+              0, //scroll offset to go
+              duration: Duration(milliseconds: 500), //duration of scroll
+              curve: Curves.fastOutSlowIn //scroll type
+              );
+        },
+        tooltip: 'Back to top',
+        child: const Icon(Icons.arrow_upward),
+      ),
       appBar: AppBar(
         title: Container(
           padding: const EdgeInsets.only(
@@ -63,6 +92,7 @@ class _HomeState extends State<Home> {
         backgroundColor: Colors.transparent,
       ),
       body: SingleChildScrollView(
+        controller: scrollController,
         child: Container(
           // blue gradient accent background color
           decoration: const BoxDecoration(
@@ -75,6 +105,7 @@ class _HomeState extends State<Home> {
               ],
             ),
           ),
+
           padding: const EdgeInsets.only(
             top: 80,
             left: 30,
@@ -113,7 +144,7 @@ class _HomeState extends State<Home> {
                       // add padding
                     ),
                   ),
-                  SizedBox(
+                  const SizedBox(
                     height: 50,
                   ),
                   const Center(
@@ -129,6 +160,7 @@ class _HomeState extends State<Home> {
                       ),
                     ),
                   ),
+
                   Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: <Widget>[
@@ -146,20 +178,22 @@ class _HomeState extends State<Home> {
                           ],
                         )
                       else
-                        ListView.builder(
-                          shrinkWrap:
-                              true, // Use shrinkWrap to allow the ListView to take only the space it needs
-                          itemCount: categories.length,
-                          itemBuilder: (context, index) {
-                            return Container(
-                              height: 50,
-                              color: Colors.amber[600],
-                              child: Center(
-                                child: Text(categories[index]),
-                              ),
-                            );
-                          },
-                        ),
+                        RefreshIndicator(
+                            onRefresh: fetchCategories,
+                            child: ListView.builder(
+                              shrinkWrap:
+                                  true, // Use shrinkWrap to allow the ListView to take only the space it needs
+                              itemCount: categories.length,
+                              itemBuilder: (context, index) {
+                                return Container(
+                                  height: 50,
+                                  color: Colors.amber[600],
+                                  child: Center(
+                                    child: Text(categories[index]),
+                                  ),
+                                );
+                              },
+                            ))
                     ],
                   ),
                 ],
