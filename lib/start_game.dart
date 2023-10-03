@@ -185,7 +185,9 @@ class _StartGameState extends State<StartGame> {
                                 const Text("The Correct Answers are:"),
                                 ListView.builder(
                                   shrinkWrap: true,
-                                  itemCount: quizData['results'].length,
+                                  itemCount: quizData.containsKey('results')
+                                      ? quizData['results'].length
+                                      : 0,
                                   itemBuilder: (context, index) {
                                     int currentNumber = index + 1;
                                     String correctAnswer =
