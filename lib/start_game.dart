@@ -179,7 +179,22 @@ class _StartGameState extends State<StartGame> {
                 Container(
                     child: showScore
                         ? GFAlert(
-                            content: 'Your score is $score / 10',
+                            contentChild: Column(
+                              children: [
+                                Text('Your score is $score / 10'),
+                                const Text("The Correct Answers are:"),
+                                ListView.builder(
+                                  shrinkWrap: true,
+                                  itemCount: quizData['results'].length,
+                                  itemBuilder: (context, index) {
+                                    int currentNumber = index + 1;
+                                    String correctAnswer =
+                                        '$currentNumber. ${decodeHtmlEntities(quizData['results'][index]['correct_answer'])}';
+                                    return Text(correctAnswer);
+                                  },
+                                )
+                              ],
+                            ),
                             type: GFAlertType.rounded,
                           )
                         : null),
