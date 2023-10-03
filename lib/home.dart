@@ -156,8 +156,6 @@ class _HomeState extends State<Home> {
 
   @override
   Widget build(BuildContext context) {
-    double screenHeight = MediaQuery.of(context).size.height;
-
     return Scaffold(
       resizeToAvoidBottomInset: false,
       extendBodyBehindAppBar: true,
@@ -248,6 +246,7 @@ class _HomeState extends State<Home> {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: <Widget>[
                       ListView.builder(
+                        physics: const NeverScrollableScrollPhysics(),
                         shrinkWrap:
                             true, // Use shrinkWrap to allow the ListView to take only the space it needs
                         itemCount: categories.length,

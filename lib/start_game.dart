@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:getwidget/getwidget.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
-import 'dart:math';
 
 class StartGame extends StatefulWidget {
   final String category;
@@ -109,6 +108,7 @@ class _StartGameState extends State<StartGame> {
                 ),
                 const SizedBox(height: 20),
                 ListView.builder(
+                  physics: const NeverScrollableScrollPhysics(),
                   shrinkWrap: true,
                   itemCount: quizData.containsKey('results')
                       ? quizData['results'].length
@@ -133,6 +133,7 @@ class _StartGameState extends State<StartGame> {
                           ),
                           const SizedBox(height: 20),
                           ListView.builder(
+                            physics: const NeverScrollableScrollPhysics(),
                             shrinkWrap: true,
                             itemCount: quizData['results'][index]
                                         ['incorrect_answers']
@@ -184,6 +185,7 @@ class _StartGameState extends State<StartGame> {
                                 Text('Your score is $score / 10'),
                                 const Text("The Correct Answers are:"),
                                 ListView.builder(
+                                  physics: const NeverScrollableScrollPhysics(),
                                   shrinkWrap: true,
                                   itemCount: quizData.containsKey('results')
                                       ? quizData['results'].length
